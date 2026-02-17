@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exam Alert India – Admin + AI Live</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+body{margin:0;font-family:Inter,'Noto Sans Devanagari',Arial;background:#f8fafc}
+header{background:#2563eb;color:#fff;padding:14px}
+header h1{margin:0;font-size:22px}
+.container{max-width:1200px;margin:auto;padding:20px}
+button{cursor:pointer}
+
+.card{background:#fff;padding:15px;border-radius:12px;margin-bottom:15px;box-shadow:0 4px 10px rgba(0,0,0,.06)}
+.badge{background:#e0f2fe;padding:4px 10px;border-radius:20px;font-size:12px}
+
+input,textarea,select{
+width:100%;padding:8px;margin:6px 0;
+border:1px solid #d1d5db;border-radius:6px
+}
+
+.btn{background:#2563eb;color:#fff;border:none;padding:8px 14px;border-radius:6px}
+.btn.green{background:#16a34a}
+.btn.red{background:#dc2626}
+
+.grid{display:grid;gap:15px}
+@media(min-width:768px){.grid{grid-template-columns:2fr 1fr}}
+
+#admin{display:none}
+.ai-box{background:#eef2ff;padding:10px;border-radius:8px;margin-top:10px}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>Exam Alert India – Admin + AI Live</h1>
+</header>
+
+<div class="container grid">
+
+<div>
+<h2>Live Website</h2>
+<div id="posts"></div>
+</div>
+
+<div id="admin" class="card">
+<h3>Admin Panel</h3>
+
+<select id="type">
+<option value="job">Job</option>
+<option value="admit">Admit</option>
+<option value="result">Result</option>
+</select>
+
+<input id="hiTitle" placeholder="Hindi Title">
+<textarea id="hiDesc" placeholder="Hindi Description"></textarea>
+
+<input id="enTitle" placeholder="English Title">
+<textarea id="enDesc" placeholder="English Description"></textarea>
+
+<button class="btn green" onclick="addPost()">Add / Update</button>
+</div>
+
+<div id="login" class="card">
+<h3>Admin Login</h3>
+<input id="user" placeholder="Username">
+<input id="pass" placeholder="Password" type="password">
+<button class="btn" onclick="login()">Login</button>
+<p style="font-size:12px">Default: admin / 1234</p>
+</div>
+
+</div>
+
+<script>
+function login(){
+if(user.value==="admin" && pass.value==="1234"){
+admin.style.display="block";
+loginBox.style.display="none";
+}else alert("Wrong login");
+}
+
+let posts=JSON.parse(localStorage.getItem("posts"))||[
+{
+type:"job",
+hi:{title:"SSC CGL 2024",desc:"5000+ vacancies"},
+en:{title:"SSC CGL 2024",desc:"5000+ vacancies"}
+}
+];
+
+function save(){
+localStorage.setItem("posts",JSON.stringify(posts));
+render();
+}
+
+const postsBox=document.getElementById("posts");
+const loginBox=document.getElementById("login");
+
+function render(){
+postsBox.innerHTML="";
+posts.forEach((p,i)=>{
+postsBox.innerHTML+=`
+<div class="card">
+<span class="badge">${p.type.toUpperCase()}</span>
+<h3>${p.hi.title}</h3>
+<p>${p.hi.desc}</p>
+<button class="btn" onclick="aiExplain(${i})">🤖 AI Explain</button>
+<button class="btn red" onclick="delPost(${i})">Delete</button>
+<div id="ai${i}" class="ai-box" style="display:none"></div>
+</div>`;
+});
+}
+render();
+
+function addPost(){
+posts.unshift({
+type:type.value,
+hi:{title:hiTitle.value,desc:hiDesc.value},
+en:{title:enTitle.value,desc:enDesc.value}
+});
+save();
+}
+
+function delPost(i){
+posts.splice(i,1);
+save();
+}
+
+function aiExplain(i){
+const box=document.getElementById("ai"+i);
+box.style.display="block";
+box.innerText="AI सोच रहा है…";
+
+setTimeout(()=>{
+box.innerText="👉 आसान शब्दों में: "+posts[i].hi.desc+" — यह जानकारी उम्मीदवारों के लिए महत्वपूर्ण है।";
+},800);
+}
+</script>
+
+</body>
+</html>
